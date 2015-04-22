@@ -22,7 +22,8 @@ Example
   [gae_sdk]
   # Downloads and extracts the App Engine SDK.
   recipe = appfy.recipe.gae:sdk
-  # Omit `url` to always use the latest from https://appengine.google.com/api/updatecheck
+  # Omit `url` to always use the latest from
+  # https://appengine.google.com/api/updatecheck
   url = http://googleappengine.googlecode.com/files/google_appengine_1.9.11.zip
   destination = ${buildout:parts-directory}
   hash-name = false
@@ -49,7 +50,8 @@ class SDKCouldNotBeFound(Exception):
 class Recipe(download.Recipe):
 
     URL = "https://appengine.google.com/api/updatecheck"
-    PYTHON_SDK_URL_TPL = "https://storage.googleapis.com/appengine-sdks/featured/google_appengine_{version}.zip"
+    PYTHON_SDK_URL_TPL = ("https://storage.googleapis.com/appengine-sdks/"
+                          "featured/google_appengine_{version}.zip")
 
     def __init__(self, buildout, name, options):
         self.logger = logging.getLogger(name)
