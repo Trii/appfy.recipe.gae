@@ -4,9 +4,11 @@ appfy.recipe.gae
 .. image:: https://travis-ci.org/prmtl/appfy.recipe.gae.png?branch=master
    :target: https://travis-ci.org/prmtl/appfy.recipe.gae
 
-`appfy.recipe.gae` provides a series of `zc.buildout <http://pypi.python.org/pypi/zc.buildout>`_
+`appfy.recipe.gae` provides a series of
+`zc.buildout <http://pypi.python.org/pypi/zc.buildout>`_
 recipes to help with `Google App Engine <http://code.google.com/appengine/>`_
-development. It is inspired by `rod.recipe.appengine <http://pypi.python.org/pypi/rod.recipe.appengine>`_,
+development. It is inspired by
+`rod.recipe.appengine <http://pypi.python.org/pypi/rod.recipe.appengine>`_,
 but using a different layout and with extended functionalities. It is also
 split in different recipes. Currently `appfy.recipe.gae` has 3 recipes:
 
@@ -18,7 +20,9 @@ split in different recipes. Currently `appfy.recipe.gae` has 3 recipes:
     dev_appserver and remote_api_shell. It also allows to set default values
     to start the dev_appserver.
 
-Source code and issue tracker can be found at `https://github.com/prmtl/appfy.recipe.gae <https://github.com/prmtl/appfy.recipe.gae>`_.
+Source code and issue tracker can be found at
+`https://github.com/prmtl/appfy.recipe.gae
+<https://github.com/prmtl/appfy.recipe.gae>`_.
 
 For an example of how appfy makes distribution of App Engine apps easy and
 nice, see `Moe installation instructions <http://www.tipfy.org/wiki/moe/>`_.
@@ -104,9 +108,10 @@ Example
 ::
 
   [gae_sdk]
-  # Dowloads and extracts the App Engine SDK.
+  # Downloads and extracts the App Engine SDK.
   recipe = appfy.recipe.gae:sdk
-  url = http://googleappengine.googlecode.com/files/google_appengine_1.3.5.zip
+  # Omit `url` to always use the latest from https://appengine.google.com/api/updatecheck
+  url = http://googleappengine.googlecode.com/files/google_appengine_1.9.11.zip
   destination = ${buildout:parts-directory}
   hash-name = false
   clear-destination = true
@@ -121,7 +126,8 @@ remote_api_shell.
 
 It also allows to set default values to start the dev_appserver.
 
-This recipe extends `zc.recipe.egg.Scripts <http://pypi.python.org/pypi/zc.recipe.egg>`_,
+This recipe extends
+`zc.recipe.egg.Scripts <http://pypi.python.org/pypi/zc.recipe.egg>`_,
 so all the options from that recipe are also valid.
 
 Options

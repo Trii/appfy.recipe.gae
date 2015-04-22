@@ -68,7 +68,8 @@ setuptools.setup(
     install_requires=[
         'setuptools',
         'zc.buildout',
-        'zc.recipe.egg >= 2.0.0'
+        'zc.recipe.egg >= 2.0.0',
+        'PyYAML'
     ],
     entry_points={
         'zc.buildout': [

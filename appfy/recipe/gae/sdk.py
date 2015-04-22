@@ -20,19 +20,19 @@ Example
 ::
 
   [gae_sdk]
-  # Dowloads and extracts the App Engine SDK.
+  # Downloads and extracts the App Engine SDK.
   recipe = appfy.recipe.gae:sdk
-  url = http://googleappengine.googlecode.com/files/google_appengine_1.3.5.zip
+  # Omit `url` to always use the latest from https://appengine.google.com/api/updatecheck
+  url = http://googleappengine.googlecode.com/files/google_appengine_1.9.11.zip
   destination = ${buildout:parts-directory}
   hash-name = false
   clear-destination = true
 """
-from distutils import version
-import json
 import logging
 import os
-import re
 import urllib2
+
+import yaml
 
 from appfy.recipe import download
 
@@ -48,12 +48,8 @@ class SDKCouldNotBeFound(Exception):
 
 class Recipe(download.Recipe):
 
-    # Eg. featured/google_appengine_1.9.14.zip
-    PYTHON_SDK_RE = re.compile(
-        r'featured/google_appengine_(\d+\.\d+\.\d+).zip'
-    )
-    URL = ("https://www.googleapis.com/storage/"
-           "v1/b/appengine-sdks/o?prefix=featured")
+    URL = "https://appengine.google.com/api/updatecheck"
+    PYTHON_SDK_URL_TPL = "https://storage.googleapis.com/appengine-sdks/featured/google_appengine_{version}.zip"
 
     def __init__(self, buildout, name, options):
         self.logger = logging.getLogger(name)
@@ -71,34 +67,15 @@ class Recipe(download.Recipe):
         return super(Recipe, self).install()
 
     def find_latest_sdk_url(self):
-        def version_key(sdk):
-            version_string = self.PYTHON_SDK_RE.match(sdk['name']).group(1)
-            return version.StrictVersion(version_string)
+        update_check_yaml = urllib2.urlopen(self.URL).read()
+        try:
+            update_check = yaml.load(update_check_yaml)
+        except yaml.YAMLError:
+            raise SDKCouldNotBeFound('Invalid yaml from {}'.format(self.URL))
 
-        raw_bucket_list = urllib2.urlopen(self.URL).read()
-        bucket_list = json.loads(raw_bucket_list)
+        if 'release' not in update_check:
+            raise SDKCouldNotBeFound(
+                'Could not find a usable SDK version automatically'
+            )
 
-        all_sdks = bucket_list['items']
-        python_sdks = [
-            sdk for sdk in all_sdks if self.PYTHON_SDK_RE.match(sdk['name'])
-        ]
-
-        # 1.9.14 > 1.9.13 so we need reverse order
-        python_sdks.sort(key=version_key, reverse=True)
-
-        # Newest listed versions are not immediately available to download.
-        # Check over HEAD.
-        for sdk in python_sdks:
-            url = str(sdk['mediaLink'])
-            try:
-                request = HeadRequest(url)
-                urllib2.urlopen(request)
-            except urllib2.HTTPError as e:
-                # 403, 401 - not yet published, try next one
-                if e.code not in (401, 403):
-                    raise
-            else:
-                return url
-        raise SDKCouldNotBeFound(
-            'Could not find a usable SDK version automatically'
-        )
+        return self.PYTHON_SDK_URL_TPL.format(version=update_check['release'])
